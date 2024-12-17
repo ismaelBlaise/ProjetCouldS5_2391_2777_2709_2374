@@ -1,25 +1,26 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15
     container_name: postgres_container
     environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: fournisseur
+      POSTGRES_USER: fournisseur
+      POSTGRES_PASSWORD: fournisseur
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres:/docker-entrypoint-initdb.d # Charger les scripts SQL initiaux si nécessaires
 
   springboot-app:
-    build: ./fournisseurIdentiteApi
+    build:
+      context: ./fournisseurIdentiteApi
+      dockerfile: Dockerfile
     container_name: springboot_container
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydatabase
-      SPRING_DATASOURCE_USERNAME: myuser
-      SPRING_DATASOURCE_PASSWORD: mypassword
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fournisseur
+      SPRING_DATASOURCE_USERNAME: fournisseur
+      SPRING_DATASOURCE_PASSWORD: fournisseur
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
     ports:
@@ -29,4 +30,3 @@ services:
 
 volumes:
   postgres_data:
-    driver: local

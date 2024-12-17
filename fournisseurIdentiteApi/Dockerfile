@@ -2,13 +2,14 @@
 FROM openjdk:17-jdk-slim AS build
 WORKDIR /app
 
-# Copier le projet dans le conteneur
+# Copier les fichiers de projet dans le conteneur
 COPY . /app
 
-# Construire le projet avec Maven
+# Donner les permissions d'exécution à mvnw et construire le projet
+RUN chmod +x ./mvnw
 RUN ./mvnw package -DskipTests
 
-# Étape 2 : Utiliser une image JDK pour exécuter l'application
+# Étape 2 : Utiliser une image JDK légère pour exécuter l'application
 FROM openjdk:17-jdk-slim
 WORKDIR /app
 
