@@ -1,32 +1,29 @@
 services:
-  postgres:
+  app:
+    build:
+      context: .           # Le contexte de build est toujours le répertoire racine
+      dockerfile: fournisseurIdentiteApi/Dockerfile
+    container_name: springboot_container
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/fournisseur
+      SPRING_DATASOURCE_USERNAME: fournisseur
+      SPRING_DATASOURCE_PASSWORD: fournisseur
+    depends_on:
+      - db
+
+  db:
     image: postgres:15
-    container_name: postgres_container
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: fournisseur
       POSTGRES_USER: fournisseur
       POSTGRES_PASSWORD: fournisseur
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres:/docker-entrypoint-initdb.d # Charger les scripts SQL initiaux si nécessaires
-
-  springboot-app:
-    build:
-      context: ./fournisseurIdentiteApi
-      dockerfile: Dockerfile
-    container_name: springboot_container
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fournisseur
-      SPRING_DATASOURCE_USERNAME: fournisseur
-      SPRING_DATASOURCE_PASSWORD: fournisseur
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "true"
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
 
 volumes:
   postgres_data:
