@@ -2,16 +2,9 @@ package web.projet.fournisseurIdentite.services;
 
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
 import web.projet.fournisseurIdentite.mappers.UtilisateurMapper;
-import web.projet.fournisseurIdentite.models.Token;
 import web.projet.fournisseurIdentite.models.Utilisateur;
-import web.projet.fournisseurIdentite.repositories.TokenRepository;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +15,6 @@ public class UtilisateurService {
     private final UtilisateurRepository utilisateurRepository;
     private final UtilisateurMapper utilisateurMapper;
 
-    @Autowired
-    private TokenRepository tokenRepository;
-
-    @Autowired
     public UtilisateurService(UtilisateurRepository utilisateurRepository,UtilisateurMapper utilisateurMapper) {
         this.utilisateurRepository = utilisateurRepository;
         this.utilisateurMapper = utilisateurMapper;
