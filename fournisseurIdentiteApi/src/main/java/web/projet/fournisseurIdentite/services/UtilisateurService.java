@@ -51,7 +51,31 @@ public class UtilisateurService {
         token.setDate_expiration(LocalDateTime.now().plusMinutes(5));
         tokenRepository.save(token);
 
+        EmailConfig config = new EmailConfig("smtp.gmail.com", 587, "rarianamiadana@gmail.com", "mgxypljhfsktzlbk");
+        String destinataires = dto.getEmail();
+
+        String sujet = "Confirmation Email";
         
+        String validationUrl = "http://localhost:8080/api/utilisateurs/valider?token=" + tokenStr;
+        // String cheminFichierHTML = "Cliquer sur cette url pour valider votre compte : "+validationUrl;
+        String contenuHTML = "Cliquer sur cette url pour valider votre compte : "+validationUrl;
+        
+        // contenuHTML = EmailContentLoader.loadHTMLFromFile(cheminFichierHTML);
+    
+        EmailService emailService = new EmailService(config);
+        emailService.sendEmail(destinataires, sujet, contenuHTML);  
+       
+        return validationUrl;
     }
 
+
+    public void validerCompte(String tokenStr) {
+        Token token = tokenRepository.findByToken(tokenStr)
+                .orElseThrow(() -> new RuntimeException("Token invalide ou expiré"));
+
+        Utilisateur utilisateur = token.getUtilisateur();
+        utilisateur.setEtat(true);
+        utilisateurRepository.save(utilisateur);
+        tokenRepository.delete(token);
+    }
 }
