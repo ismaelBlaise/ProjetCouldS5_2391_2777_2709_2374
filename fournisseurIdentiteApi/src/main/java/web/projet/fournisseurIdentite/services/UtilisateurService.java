@@ -129,6 +129,7 @@ public class UtilisateurService {
         }   
         Utilisateur utilisateur = token.getUtilisateur();
         utilisateur.setEtat(true);
+        
         utilisateurRepository.save(utilisateur);
         tokenRepository.delete(token);
     }
