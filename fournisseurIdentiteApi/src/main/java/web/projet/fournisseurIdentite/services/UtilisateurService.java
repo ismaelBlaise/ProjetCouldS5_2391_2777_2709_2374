@@ -75,7 +75,7 @@ public class UtilisateurService {
 
     public String creationUrlValidation(Token token){
     
-        String validationUrl = "http://localhost:8080/api/utilisateurs/valider?token=" + token.getToken();
+        String validationUrl = "http://localhost:8080/utilisateurs/valider-compte?token=" + token.getToken();
         return validationUrl;
     }
 
