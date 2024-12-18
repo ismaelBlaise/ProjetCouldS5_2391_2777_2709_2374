@@ -1,6 +1,7 @@
 package web.projet.fournisseurIdentite.controllers;
 
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
+import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurUpdateDTO;
 import web.projet.fournisseurIdentite.services.UtilisateurService;
 
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class UtilisateurController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UtilisateurDTO> update(@PathVariable Integer id, @RequestBody UtilisateurDTO data) {
+    public ResponseEntity<UtilisateurDTO> update(@PathVariable Integer id, @RequestBody UtilisateurUpdateDTO data) {
         return ResponseEntity.ok(utilisateurService.update(id, data));
     }
 
