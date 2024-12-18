@@ -7,7 +7,7 @@ import web.projet.fournisseurIdentite.models.Sexe;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-18T17:48:29+0300",
+    date = "2024-12-18T18:22:02+0300",
     comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 3.40.0.z20241112-1021, environment: Java 17.0.13 (Eclipse Adoptium)"
 )
 @Component

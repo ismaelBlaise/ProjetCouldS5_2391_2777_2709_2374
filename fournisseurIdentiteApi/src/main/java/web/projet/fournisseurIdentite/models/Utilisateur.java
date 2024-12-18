@@ -23,8 +23,25 @@ public class Utilisateur {
     private String mot_de_passe;
     private Boolean etat = false;
     private Integer nb_tentative = 0;
-
+    @Version
+    private Long version; // Gestion de la version
     @ManyToOne
     @JoinColumn(name = "id_sexe")
     private Sexe sexe;
+
+    @Override
+    public String toString() {
+        return "Utilisateur{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", date_naissance=" + date_naissance +
+                ", mot_de_passe='[PROTÉGÉ]'" + // Ne pas afficher le mot de passe en clair
+                ", etat=" + etat +
+                ", nb_tentative=" + nb_tentative +
+                ", sexe=" + (sexe != null ? sexe.getSexe() : "Non spécifié") +
+                '}';
+    }
+
 }

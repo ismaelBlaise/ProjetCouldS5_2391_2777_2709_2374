@@ -11,12 +11,14 @@ import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 public class UtilisateurService {
 
     @Autowired
@@ -42,32 +44,44 @@ public class UtilisateurService {
     }
 
 
-    public String inscrireUtilisateur(UtilisateurDTO dto) throws Exception{
-        Utilisateur utilisateur= utilisateurRepository.findByEmail(dto.getEmail()).get();
-        if(utilisateur!=null && utilisateur.getEtat()==false){
-            
-            
-            
+    public String inscrireUtilisateur(UtilisateurDTO dto) throws Exception {
+        Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findByEmail(dto.getEmail());
+    
+        if (optionalUtilisateur.isPresent()) {
+            Utilisateur utilisateur = optionalUtilisateur.get();
+    
+            if (utilisateur.getEtat() == false) {
+                Token token = tokenService.recupererTokenUtiliateur(dto);
+    
+                if (token.getDate_expiration().isBefore(LocalDateTime.now())) {
+                    Token newToken = tokenRepository.save(tokenService.creationToken(utilisateur));
+                    String newUrl = creationUrlValidation(newToken);
+                    emailValidation(dto, newUrl);
+                    return newUrl;
+                }
+    
+                String url = creationUrlValidation(token);
+                emailValidation(dto, url);
+                return url;
+            } else if (utilisateur.getEtat() == true) {
+                throw new RuntimeException("L'adresse email est deja utilise");
+            }
         }
-        else if(utilisateur!=null && utilisateur.getEtat()==true){
-            throw new RuntimeException("L'adresse email est deja utilise");
-        }
-
-        utilisateur= utilisateurMapper.toUtilisateur(dto);
-        utilisateur.setMot_de_passe(BCrypt.hashpw(dto.getMot_de_passe(), BCrypt.gensalt(10)));
-        utilisateur.setEtat(false);
-        utilisateurRepository.save(utilisateur);
-
-       
-        Token token=tokenRepository.save(tokenService.creationToken(utilisateur));
-
-        String tokenStr=creationUrlValidation(token);
-
-        emailValidation(dto, tokenStr);
+    
+        // Si aucun utilisateur n'existe avec cet email, en créer un nouveau
         
-       
-        return tokenStr;
+        dto.setMot_de_passe(BCrypt.hashpw(dto.getMot_de_passe(), BCrypt.gensalt(10)));
+        dto.setEtat(false);
+        Utilisateur utilisateur=utilisateurMapper.toUtilisateur(save(dto));
+        // System.out.println(utilisateur.toString());
+        utilisateur=utilisateurRepository.save(utilisateur);
+        Token token = tokenRepository.save(tokenService.creationToken(utilisateur));
+        String url = creationUrlValidation(token);
+        emailValidation(dto, url);
+    
+        return "url";
     }
+    
 
     
 
