@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import web.projet.fournisseurIdentite.models.Sexe;
 
 @Repository
-public interface SexeRepository extends JpaRepository<Sexe,Integer> {
+public interface SexeRepository extends JpaRepository<Sexe,Long> {
 
 }

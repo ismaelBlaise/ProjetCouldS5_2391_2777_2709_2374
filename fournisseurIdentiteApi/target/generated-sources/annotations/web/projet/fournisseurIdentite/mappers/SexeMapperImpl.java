@@ -7,8 +7,8 @@ import web.projet.fournisseurIdentite.models.Sexe;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-18T17:12:50+0300",
-    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 3.40.0.z20241112-1021, environment: Java 21.0.5 (Ubuntu)"
+    date = "2024-12-18T19:48:19+0300",
+    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 21.0.5 (Ubuntu)"
 )
 @Component
 public class SexeMapperImpl implements SexeMapper {
@@ -21,7 +21,9 @@ public class SexeMapperImpl implements SexeMapper {
 
         Sexe sexe = new Sexe();
 
-        sexe.setId( sexeDTO.getId() );
+        if ( sexeDTO.getId() != null ) {
+            sexe.setId( sexeDTO.getId().longValue() );
+        }
         sexe.setSexe( sexeDTO.getSexe() );
 
         return sexe;
@@ -35,7 +37,9 @@ public class SexeMapperImpl implements SexeMapper {
 
         SexeDTO sexeDTO = new SexeDTO();
 
-        sexeDTO.setId( sexe.getId() );
+        if ( sexe.getId() != null ) {
+            sexeDTO.setId( sexe.getId().intValue() );
+        }
         sexeDTO.setSexe( sexe.getSexe() );
 
         return sexeDTO;

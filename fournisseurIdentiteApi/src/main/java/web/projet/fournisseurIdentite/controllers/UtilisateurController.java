@@ -1,5 +1,6 @@
 package web.projet.fournisseurIdentite.controllers;
 
+import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurCreateDTO;
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurUpdateDTO;
 import web.projet.fournisseurIdentite.services.UtilisateurService;
@@ -18,12 +19,12 @@ public class UtilisateurController {
     }
 
     @PostMapping
-    public UtilisateurDTO create(@RequestBody UtilisateurDTO data) {
+    public UtilisateurDTO create(@RequestBody UtilisateurCreateDTO data) {
         return utilisateurService.save(data);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UtilisateurDTO> update(@PathVariable Integer id, @RequestBody UtilisateurUpdateDTO data) {
+    public ResponseEntity<UtilisateurDTO> update(@PathVariable Long id, @RequestBody UtilisateurUpdateDTO data) {
         return ResponseEntity.ok(utilisateurService.update(id, data));
     }
 
