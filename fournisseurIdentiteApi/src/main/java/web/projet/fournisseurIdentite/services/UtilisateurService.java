@@ -125,7 +125,7 @@ public class UtilisateurService {
                 .orElseThrow(() -> new RuntimeException("Token invalide ou expiré"));
 
         if(token.getDate_expiration().isBefore(LocalDateTime.now())){
-            throw 
+            throw  new RuntimeException("Token invalide ou expiré");
         }   
         Utilisateur utilisateur = token.getUtilisateur();
         utilisateur.setEtat(true);
