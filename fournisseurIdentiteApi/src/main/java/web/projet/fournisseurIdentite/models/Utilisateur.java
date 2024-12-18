@@ -23,8 +23,7 @@ public class Utilisateur {
     private String mot_de_passe;
     private Boolean etat = false;
     private Integer nb_tentative = 0;
-    @Version
-    private Long version; // Gestion de la version
+    
     @ManyToOne
     @JoinColumn(name = "id_sexe")
     private Sexe sexe;

@@ -1,9 +1,8 @@
 package web.projet.fournisseurIdentite.services;
 
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
+import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurUpdateDTO;
 import web.projet.fournisseurIdentite.mail.*;
-import web.projet.fournisseurIdentite.mappers.SexeMapper;
-// import web.projet.fournisseurIdentite.mail.EmailService;
 import web.projet.fournisseurIdentite.mappers.UtilisateurMapper;
 import web.projet.fournisseurIdentite.models.Token;
 import web.projet.fournisseurIdentite.models.Utilisateur;
@@ -13,7 +12,6 @@ import web.projet.fournisseurIdentite.repositories.SexeRepository;
 import web.projet.fournisseurIdentite.repositories.TokenRepository;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 import web.projet.fournisseurIdentite.repositories.ConfigurationRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -36,8 +34,6 @@ public class UtilisateurService {
     @Autowired
     private SexeRepository sexeRepository;
     @Autowired
-    private SexeMapper sexeMapper;
-    @Autowired
     private ConfigurationRepository configurationRepository;
 
     public UtilisateurDTO save(UtilisateurDTO data) {
@@ -45,14 +41,22 @@ public class UtilisateurService {
         return utilisateurMapper.toUtilisateurDTO(utilisateur);
     }
 
-    public UtilisateurDTO update(Integer id, UtilisateurDTO data) {
+    public UtilisateurDTO update(Long id, UtilisateurUpdateDTO data) {
         Utilisateur existingUtilisateur = utilisateurRepository.findById(id).orElseThrow(() -> new RuntimeException("Utilisateur not found with id " + id));
-        Utilisateur updateUtilisateur = utilisateurMapper.toUtilisateur(data);
-        updateUtilisateur.setId(existingUtilisateur.getId());
-        Utilisateur savedUtilisateur = utilisateurRepository.save(updateUtilisateur);
+        utilisateurMapper.updateUtilisateurFromDTO(data, existingUtilisateur);
+        Sexe sexe = sexeRepository.findById(data.getId_Sexe()).orElseThrow(() -> new RuntimeException("sexe not found"));
+        existingUtilisateur.setSexe(sexe);
+        Utilisateur savedUtilisateur = utilisateurRepository.save(existingUtilisateur);
         return utilisateurMapper.toUtilisateurDTO(savedUtilisateur);
     }
 
+    public String demanderReinitialisation(UtilisateurDTO dto) throws Exception {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new RuntimeException("utilisateur untrouvable"));
+        Token newToken = tokenRepository.save(tokenService.creationToken(utilisateur));
+        String newUrl = creationUrlValidation(newToken);
+        emailReinitialisation(dto, newUrl);
+        return newUrl;
+    }
 
     public String inscrireUtilisateur(UtilisateurDTO dto) throws Exception {
         Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findByEmail(dto.getEmail());
@@ -98,13 +102,15 @@ public class UtilisateurService {
     }
     
 
-    
-
-    
-
     public String creationUrlValidation(Token token){
     
         String validationUrl = "http://localhost:8080/utilisateurs/valider-compte?token=" + token.getToken();
+        return validationUrl;
+    }
+
+    public String creationUrlReinitialisation(Token token){
+    
+        String validationUrl = "http://localhost:8080/utilisateurs/reinitialiser-tentative?token=" + token.getToken();
         return validationUrl;
     }
 
@@ -122,6 +128,20 @@ public class UtilisateurService {
         emailService.sendEmail(destinataires, sujet, contenuHTML);  
     }
 
+    public void emailReinitialisation(UtilisateurDTO dto,String validationUrl) throws Exception{
+        EmailConfig config = new EmailConfig("smtp.gmail.com", 587, "rarianamiadana@gmail.com", "mgxypljhfsktzlbk");
+        String destinataires = dto.getEmail();
+
+        String sujet = "Reinitialiser tentative Email";
+    
+        String contenuHTML = "Cliquer sur cette url pour reinitialiser vos tentative: "+validationUrl;
+        
+    
+        EmailService emailService = new EmailService(config);
+        emailService.sendEmail(destinataires, sujet, contenuHTML);  
+    }
+
+
     public void validerCompte(String tokenStr) {
 
         Token token = tokenRepository.findByToken(tokenStr)
@@ -137,4 +157,69 @@ public class UtilisateurService {
         utilisateurRepository.save(utilisateur);
         tokenRepository.delete(token);
     }
+
+    public void reinitialiserTentative(String tokenStr) {
+        Token token = tokenRepository.findByToken(tokenStr).orElseThrow(() -> new RuntimeException("Token invalide ou expiré"));
+        Utilisateur utilisateur = token.getUtilisateur();
+        Configuration configuration=configurationRepository.findByCle("nbtentative").get();
+        utilisateur.setNb_tentative(Integer.parseInt(configuration.getValeur()));
+        utilisateurRepository.save(utilisateur);
+        tokenRepository.delete(token);
+    }
+
+    public String  validationPin(ValidationPinDTO validationPinDTO) {
+        String email = validationPinDTO.getEmail();
+        int codePin = validationPinDTO.getCodepin();
+        
+        // Vérifier si l'utilisateur existe
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+    
+        // Vérifier si le nombre de tentatives est épuisé
+        if (utilisateur.getNb_tentative() == 0 ) {
+            UtilisateurDTO utilisateurdto=UtilisateurMapper.toUtilisateurDTO(utilisateur);
+            demanderReinitialisation(utilisateurDTO);
+            // throw new RuntimeException("Trop de tentatives. Compte bloqué temporairement.");
+        }
+    
+        // Vérifier si le Code PIN est valide
+        CodePin codePinEntity = codePinRepository.findByCodepin(codePin)
+                .orElse(null);
+    
+        if (codePinEntity != null && !codePinEntity.getDateExpiration().isBefore(LocalDateTime.now())) {
+            resetNbTentative(utilisateur);
+            Token token=tokenservice.creationToken(utilisateur);
+            token=tokenservice.genererDateExpiration(token);
+            tokenRepository.save(token);
+            return token.getToken();
+        } 
+        // Si le Code PIN est incorrect ou expiré
+        incrementNbTentative(utilisateur);
+        System.out.println("Code PIN valide pour l'utilisateur : " + utilisateur.getEmail());
+        return null;
+        // throw new RuntimeException("Code PIN incorrect ou expiré.");
+    
+
+        
+        
+    }
+    
+
+
+    private int getMaxAttempts() {
+        Configuration conf=configurationRepository.findByCle("nbtentative").get();
+        int value=Integer.parseInt(conf.getValeur());
+        return value;
+    }
+
+    private void incrementNbTentative(Utilisateur utilisateur) {
+        utilisateur.setNb_tentative(utilisateur.getNb_tentative() - 1);
+        System.out.println("Utilisateur defaut : " + (utilisateur.getNb_tentative() - 1));
+        utilisateurRepository.save(utilisateur);
+    }
+
+    private void resetNbTentative(Utilisateur utilisateur) {
+        utilisateur.setNb_tentative(getMaxAttempts());
+        utilisateurRepository.save(utilisateur);
+    }      
 }
