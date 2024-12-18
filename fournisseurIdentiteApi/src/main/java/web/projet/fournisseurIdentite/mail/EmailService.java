@@ -23,4 +23,6 @@ public class EmailService {
         message.setContent(htmlContent, "text/html");
         Transport.send(message);
     }
+
+    
 }

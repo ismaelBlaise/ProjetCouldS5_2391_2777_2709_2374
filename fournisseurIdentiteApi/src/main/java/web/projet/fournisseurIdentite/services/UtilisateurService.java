@@ -11,9 +11,12 @@ import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.mail.MessagingException;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +30,8 @@ public class UtilisateurService {
     private UtilisateurMapper utilisateurMapper;
     @Autowired
     private TokenRepository tokenRepository;
-    
+    @Autowired
+    private TokenService tokenService;
 
     public UtilisateurDTO save(UtilisateurDTO data) {
         Utilisateur utilisateur = utilisateurMapper.toUtilisateur(data);
@@ -43,7 +47,7 @@ public class UtilisateurService {
     }
 
 
-    public String inscrireUtilisateur(UtilisateurDTO dto){
+    public String inscrireUtilisateur(UtilisateurDTO dto) throws Exception{
         Utilisateur utilisateur= utilisateurRepository.findByEmail(dto.getEmail()).get();
         if(utilisateur!=null && utilisateur.getEtat()==false){
             
@@ -55,34 +59,44 @@ public class UtilisateurService {
         }
 
         utilisateur= utilisateurMapper.toUtilisateur(dto);
-
+        utilisateur.setMot_de_passe(BCrypt.hashpw(dto.getMot_de_passe(), BCrypt.gensalt(10)));
         utilisateur.setEtat(false);
         utilisateurRepository.save(utilisateur);
 
-        String tokenStr=UUID.randomUUID().toString();
-        Token token= new Token();
-        token.setToken(tokenStr);
-        token.setUtilisateur(utilisateur);
-        token.setDate_expiration(LocalDateTime.now().plusMinutes(5));
-        tokenRepository.save(token);
+       
+        Token token=tokenRepository.save(tokenService.creationToken(utilisateur));
 
+        String tokenStr=creationUrlValidation(token);
+
+        emailValidation(dto, tokenStr);
+        
+       
+        return tokenStr;
+    }
+
+    
+
+    
+
+    public String creationUrlValidation(Token token){
+    
+        String validationUrl = "http://localhost:8080/api/utilisateurs/valider?token=" + token.getToken();
+        return validationUrl;
+    }
+
+
+    public void emailValidation(UtilisateurDTO dto,String validationUrl) throws Exception{
         EmailConfig config = new EmailConfig("smtp.gmail.com", 587, "rarianamiadana@gmail.com", "mgxypljhfsktzlbk");
         String destinataires = dto.getEmail();
 
         String sujet = "Confirmation Email";
-        
-        String validationUrl = "http://localhost:8080/api/utilisateurs/valider?token=" + tokenStr;
-        // String cheminFichierHTML = "Cliquer sur cette url pour valider votre compte : "+validationUrl;
+    
         String contenuHTML = "Cliquer sur cette url pour valider votre compte : "+validationUrl;
         
-        // contenuHTML = EmailContentLoader.loadHTMLFromFile(cheminFichierHTML);
     
         EmailService emailService = new EmailService(config);
         emailService.sendEmail(destinataires, sujet, contenuHTML);  
-       
-        return validationUrl;
     }
-
 
     public void validerCompte(String tokenStr) {
         Token token = tokenRepository.findByToken(tokenStr)
