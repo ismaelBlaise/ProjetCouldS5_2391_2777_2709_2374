@@ -120,9 +120,13 @@ public class UtilisateurService {
     }
 
     public void validerCompte(String tokenStr) {
+
         Token token = tokenRepository.findByToken(tokenStr)
                 .orElseThrow(() -> new RuntimeException("Token invalide ou expiré"));
 
+        if(token.getDate_expiration().isBefore(LocalDateTime.now())){
+            throw 
+        }   
         Utilisateur utilisateur = token.getUtilisateur();
         utilisateur.setEtat(true);
         utilisateurRepository.save(utilisateur);

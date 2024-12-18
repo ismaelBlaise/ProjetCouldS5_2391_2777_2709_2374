@@ -25,7 +25,7 @@ public class TokenService{
         Token token= new Token();
         token.setToken(tokenStr);
         token.setUtilisateur(utilisateur);
-        token.setDate_expiration(LocalDateTime.now().plusMinutes(5));
+        token.setDate_expiration(LocalDateTime.now().plusSeconds(1));
         return token;
     }
 
