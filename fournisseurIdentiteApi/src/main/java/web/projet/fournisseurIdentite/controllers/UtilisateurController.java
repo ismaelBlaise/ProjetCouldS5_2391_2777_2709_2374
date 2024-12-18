@@ -37,7 +37,7 @@ public class UtilisateurController {
         }
     }
 
-    @GetMapping("/valider")
+    @GetMapping("/valider-compte")
     public ResponseEntity<String> validerCompte(@RequestParam String token) {
         try {
             utilisateurService.validerCompte(token);

@@ -21,7 +21,7 @@ public class Utilisateur {
     private String prenom;
     private LocalDate date_naissance;
     private String mot_de_passe;
-    private Boolean etat = false; // Par défaut à false
+    private Boolean etat = false;
     private Integer nb_tentative = 0;
 
     @ManyToOne

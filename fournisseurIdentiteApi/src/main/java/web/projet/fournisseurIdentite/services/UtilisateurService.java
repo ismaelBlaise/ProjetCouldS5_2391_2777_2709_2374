@@ -11,11 +11,6 @@ import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.mail.MessagingException;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
