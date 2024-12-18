@@ -6,19 +6,19 @@ import web.projet.fournisseurIdentite.models.Utilisateur;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
 public class UtilisateurService {
 
-    private final UtilisateurRepository utilisateurRepository;
-    private final UtilisateurMapper utilisateurMapper;
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
+    @Autowired
+    private UtilisateurMapper utilisateurMapper;
 
-    public UtilisateurService(UtilisateurRepository utilisateurRepository,UtilisateurMapper utilisateurMapper) {
-        this.utilisateurRepository = utilisateurRepository;
-        this.utilisateurMapper = utilisateurMapper;
-    }
+    
 
     public UtilisateurDTO save(UtilisateurDTO data) {
         Utilisateur utilisateur = utilisateurMapper.toUtilisateur(data);
