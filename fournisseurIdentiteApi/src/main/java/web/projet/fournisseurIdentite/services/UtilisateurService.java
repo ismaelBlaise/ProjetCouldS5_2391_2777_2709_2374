@@ -2,6 +2,7 @@ package web.projet.fournisseurIdentite.services;
 
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
 import web.projet.fournisseurIdentite.mappers.UtilisateurMapper;
+import web.projet.fournisseurIdentite.models.Token;
 import web.projet.fournisseurIdentite.models.Utilisateur;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
