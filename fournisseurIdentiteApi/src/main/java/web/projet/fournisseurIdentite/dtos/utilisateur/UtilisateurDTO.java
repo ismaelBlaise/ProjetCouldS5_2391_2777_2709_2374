@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import lombok.Data;
 import web.projet.fournisseurIdentite.dtos.sexe.SexeDTO;
+import web.projet.fournisseurIdentite.models.Sexe;
 
 @Data
 public class UtilisateurDTO {
@@ -16,5 +17,5 @@ public class UtilisateurDTO {
     private String mot_de_passe;
     private Boolean etat = false;  
     private Integer nb_tentative = 0;
-    private Sexe sexe;
+    private SexeDt sexe;
 }
