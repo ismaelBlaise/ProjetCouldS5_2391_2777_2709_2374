@@ -1,17 +1,21 @@
 package web.projet.fournisseurIdentite.services;
 
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
-import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurLoginDTO;
-import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurResponseDTO;
+import web.projet.fournisseurIdentite.dtos.utilisateur.ValidationPinDTO;
 import web.projet.fournisseurIdentite.mappers.UtilisateurMapper;
+import web.projet.fournisseurIdentite.models.CodePin;
+import web.projet.fournisseurIdentite.models.Configuration;
 import web.projet.fournisseurIdentite.models.Utilisateur;
+import web.projet.fournisseurIdentite.repositories.CodePinRepository;
 import web.projet.fournisseurIdentite.repositories.ConfigurationRepository;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.mindrot.jbcrypt.BCrypt;
 
 @Service
 @Transactional
@@ -23,6 +27,10 @@ public class UtilisateurService {
     private UtilisateurMapper utilisateurMapper;
     @Autowired
     private ConfigurationRepository configurationRepository;
+
+    @Autowired
+    private CodePinRepository codePinRepository;
+
     
 
     public UtilisateurDTO save(UtilisateurDTO data) {
@@ -37,46 +45,44 @@ public class UtilisateurService {
         Utilisateur savedUtilisateur = utilisateurRepository.save(updateUtilisateur);
         return utilisateurMapper.toUtilisateurDTO(savedUtilisateur);
     }
-    
-     public UtilisateurResponseDTO authenticate(UtilisateurLoginDTO loginDTO) {
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(loginDTO.getEmail())
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-        // Récupérer la limite des tentatives à partir de la table 'configurations'
-        int maxAttempts = getMaxAttempts();
+    public void validationPin(ValidationPinDTO validationPinDTO) {
+        String email = validationPinDTO.getEmail();
+        int codePin = validationPinDTO.getCodepin();
 
-        // Si le nombre de tentatives dépasse la limite, bloquer l'utilisateur
-        if (utilisateur.getNb_tentative() >= maxAttempts) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+        CodePin codePinEntity = codePinRepository.findByCodepin(codePin)
+                .orElseThrow(() -> {
+                    incrementNbTentative(utilisateur);
+                    return new RuntimeException("Code PIN incorrect.");
+                });
+        if (codePinEntity.getDateExpiration().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Code PIN expiré.");
+        }
+
+        if (utilisateur.getNb_tentative() >= 0) {
             throw new RuntimeException("Trop de tentatives. Compte bloqué temporairement.");
         }
-
-        if (!BCrypt.checkpw(loginDTO.getMotDePasse(), utilisateur.getMot_de_passe())) {
-            incrementNbTentative(utilisateur);
-            throw new RuntimeException("Email ou mot de passe incorrect.");
-        }
-
-        // Réinitialiser le nombre de tentatives en cas de succès
+        
         resetNbTentative(utilisateur);
-        return utilisateurMapper.toResponseDTO(utilisateur);
     }
-    
+
+
     private int getMaxAttempts() {
-        return configurationRepository.findByCle("nbtentative")
-                .map(config -> Integer.parseInt(config.getValeur()))
-                .orElseThrow(() -> new RuntimeException("Clé 'nbtentative' introuvable dans la table configurations"));
+        Configuration conf=configurationRepository.findByCle("nbtentative").get();
+        int value=Integer.parseInt(conf.getValeur());
+        return value;
     }
 
     private void incrementNbTentative(Utilisateur utilisateur) {
-        utilisateur.setNb_tentative(utilisateur.getNb_tentative() + 1);
+        utilisateur.setNb_tentative(utilisateur.getNb_tentative() - 1);
         utilisateurRepository.save(utilisateur);
     }
 
     private void resetNbTentative(Utilisateur utilisateur) {
-        utilisateur.setNb_tentative(0);
+        utilisateur.setNb_tentative(getMaxAttempts());
         utilisateurRepository.save(utilisateur);
-    }
-    private String hashPassword(String plainPassword) {
-        return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
     }
 
 }
