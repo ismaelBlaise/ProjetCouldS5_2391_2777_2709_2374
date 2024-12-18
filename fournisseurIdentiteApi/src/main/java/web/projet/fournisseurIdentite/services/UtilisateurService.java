@@ -2,10 +2,13 @@ package web.projet.fournisseurIdentite.services;
 
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
 import web.projet.fournisseurIdentite.mail.*;
+import web.projet.fournisseurIdentite.mappers.SexeMapper;
 // import web.projet.fournisseurIdentite.mail.EmailService;
 import web.projet.fournisseurIdentite.mappers.UtilisateurMapper;
 import web.projet.fournisseurIdentite.models.Token;
 import web.projet.fournisseurIdentite.models.Utilisateur;
+import web.projet.fournisseurIdentite.models.Sexe;
+import web.projet.fournisseurIdentite.repositories.SexeRepository;
 import web.projet.fournisseurIdentite.repositories.TokenRepository;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
@@ -29,6 +32,10 @@ public class UtilisateurService {
     private TokenRepository tokenRepository;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private SexeRepository sexeRepository;
+    @Autowired
+    private SexeMapper sexeMapper;
 
     public UtilisateurDTO save(UtilisateurDTO data) {
         Utilisateur utilisateur = utilisateurMapper.toUtilisateur(data);
@@ -73,13 +80,18 @@ public class UtilisateurService {
         dto.setMot_de_passe(BCrypt.hashpw(dto.getMot_de_passe(), BCrypt.gensalt(10)));
         dto.setEtat(false);
         Utilisateur utilisateur=utilisateurMapper.toUtilisateur(save(dto));
+        utilisateur.setId(null);
         // System.out.println(utilisateur.toString());
+        // Sexe sexe=sexeMapper.toSexe(dto.getSexe());
+        // if(!sexeRepository.findById(sexe.getId()).isEmpty()){
+        //     sexeRepository.save(sexe);
+        // }
         utilisateur=utilisateurRepository.save(utilisateur);
         Token token = tokenRepository.save(tokenService.creationToken(utilisateur));
         String url = creationUrlValidation(token);
         emailValidation(dto, url);
     
-        return "url";
+        return url;
     }
     
 
