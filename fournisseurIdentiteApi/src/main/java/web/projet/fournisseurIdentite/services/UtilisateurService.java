@@ -7,11 +7,12 @@ import web.projet.fournisseurIdentite.mappers.SexeMapper;
 import web.projet.fournisseurIdentite.mappers.UtilisateurMapper;
 import web.projet.fournisseurIdentite.models.Token;
 import web.projet.fournisseurIdentite.models.Utilisateur;
+import web.projet.fournisseurIdentite.models.Configuration;
 import web.projet.fournisseurIdentite.models.Sexe;
 import web.projet.fournisseurIdentite.repositories.SexeRepository;
 import web.projet.fournisseurIdentite.repositories.TokenRepository;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
-
+import web.projet.fournisseurIdentite.repositories.ConfigurationRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,8 @@ public class UtilisateurService {
     private SexeRepository sexeRepository;
     @Autowired
     private SexeMapper sexeMapper;
+    @Autowired
+    private ConfigurationRepository configurationRepository;
 
     public UtilisateurDTO save(UtilisateurDTO data) {
         Utilisateur utilisateur = utilisateurMapper.toUtilisateur(data);
@@ -129,7 +132,8 @@ public class UtilisateurService {
         }   
         Utilisateur utilisateur = token.getUtilisateur();
         utilisateur.setEtat(true);
-        
+        Configuration configuration=configurationRepository.findByCle("nbtentative").get();
+        utilisateur.setNb_tentative(Integer.parseInt(configuration.getValeur()));
         utilisateurRepository.save(utilisateur);
         tokenRepository.delete(token);
     }
