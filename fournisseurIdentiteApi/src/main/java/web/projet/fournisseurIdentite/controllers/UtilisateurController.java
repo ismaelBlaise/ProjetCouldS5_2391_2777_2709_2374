@@ -30,10 +30,13 @@ public class UtilisateurController {
     @PostMapping("/validation-pin")
     public ResponseEntity<String> validationPin(@RequestBody ValidationPinDTO validationPinDTO) {
         try {
-            utilisateurService.validationPin(validationPinDTO);
-            return ResponseEntity.ok("Code PIN validé avec succès.");
+            String tokens=utilisateurService.validationPin(validationPinDTO);
+            if(tokens==null){
+                throw new RuntimeException("Code PIN incorrect.");
+            }
+            return ResponseEntity.ok(tokens);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Code pin non jhfghfhgfh");
         }
     }
 

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: web.projet.fournisseurIdentite.FournisseurIdentiteApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 39.21 s -- in web.projet.fournisseurIdentite.FournisseurIdentiteApplicationTests
