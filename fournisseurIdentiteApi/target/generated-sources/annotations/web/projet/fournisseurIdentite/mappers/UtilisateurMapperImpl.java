@@ -1,0 +1,85 @@
+package web.projet.fournisseurIdentite.mappers;
+
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+import web.projet.fournisseurIdentite.dtos.sexe.SexeDTO;
+import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
+import web.projet.fournisseurIdentite.models.Sexe;
+import web.projet.fournisseurIdentite.models.Utilisateur;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2024-12-18T14:33:35+0300",
+    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 3.40.0.z20241112-1021, environment: Java 17.0.13 (Eclipse Adoptium)"
+)
+@Component
+public class UtilisateurMapperImpl implements UtilisateurMapper {
+
+    @Override
+    public Utilisateur toUtilisateur(UtilisateurDTO utilisateurDTO) {
+        if ( utilisateurDTO == null ) {
+            return null;
+        }
+
+        Utilisateur utilisateur = new Utilisateur();
+
+        utilisateur.setDate_naissance( utilisateurDTO.getDate_naissance() );
+        utilisateur.setEmail( utilisateurDTO.getEmail() );
+        utilisateur.setEtat( utilisateurDTO.getEtat() );
+        utilisateur.setId( utilisateurDTO.getId() );
+        utilisateur.setMot_de_passe( utilisateurDTO.getMot_de_passe() );
+        utilisateur.setNb_tentative( utilisateurDTO.getNb_tentative() );
+        utilisateur.setNom( utilisateurDTO.getNom() );
+        utilisateur.setPrenom( utilisateurDTO.getPrenom() );
+        utilisateur.setSexe( sexeDTOToSexe( utilisateurDTO.getSexe() ) );
+
+        return utilisateur;
+    }
+
+    @Override
+    public UtilisateurDTO toUtilisateurDTO(Utilisateur utilisateur) {
+        if ( utilisateur == null ) {
+            return null;
+        }
+
+        UtilisateurDTO utilisateurDTO = new UtilisateurDTO();
+
+        utilisateurDTO.setDate_naissance( utilisateur.getDate_naissance() );
+        utilisateurDTO.setEmail( utilisateur.getEmail() );
+        utilisateurDTO.setEtat( utilisateur.getEtat() );
+        utilisateurDTO.setId( utilisateur.getId() );
+        utilisateurDTO.setMot_de_passe( utilisateur.getMot_de_passe() );
+        utilisateurDTO.setNb_tentative( utilisateur.getNb_tentative() );
+        utilisateurDTO.setNom( utilisateur.getNom() );
+        utilisateurDTO.setPrenom( utilisateur.getPrenom() );
+        utilisateurDTO.setSexe( sexeToSexeDTO( utilisateur.getSexe() ) );
+
+        return utilisateurDTO;
+    }
+
+    protected Sexe sexeDTOToSexe(SexeDTO sexeDTO) {
+        if ( sexeDTO == null ) {
+            return null;
+        }
+
+        Sexe sexe = new Sexe();
+
+        sexe.setId( sexeDTO.getId() );
+        sexe.setSexe( sexeDTO.getSexe() );
+
+        return sexe;
+    }
+
+    protected SexeDTO sexeToSexeDTO(Sexe sexe) {
+        if ( sexe == null ) {
+            return null;
+        }
+
+        SexeDTO sexeDTO = new SexeDTO();
+
+        sexeDTO.setId( sexe.getId() );
+        sexeDTO.setSexe( sexe.getSexe() );
+
+        return sexeDTO;
+    }
+}
