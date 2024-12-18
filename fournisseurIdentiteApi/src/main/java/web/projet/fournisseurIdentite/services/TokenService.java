@@ -19,4 +19,8 @@ public class TokenService{
         token.setDate_expiration(LocalDateTime.now().plusMinutes(5));
         return token;
     }
+
+    public Token recupererTokenUtiliateur(UtilisateurDTO utilisateurDTO ){
+        
+    }
 }

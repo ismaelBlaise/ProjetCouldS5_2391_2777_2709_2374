@@ -9,8 +9,8 @@ import web.projet.fournisseurIdentite.models.Utilisateur;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-18T16:48:48+0300",
-    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 20 (Oracle Corporation)"
+    date = "2024-12-18T17:48:31+0300",
+    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 3.40.0.z20241112-1021, environment: Java 17.0.13 (Eclipse Adoptium)"
 )
 @Component
 public class UtilisateurMapperImpl implements UtilisateurMapper {
@@ -23,14 +23,14 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         Utilisateur utilisateur = new Utilisateur();
 
-        utilisateur.setId( utilisateurDTO.getId() );
+        utilisateur.setDate_naissance( utilisateurDTO.getDate_naissance() );
         utilisateur.setEmail( utilisateurDTO.getEmail() );
+        utilisateur.setEtat( utilisateurDTO.getEtat() );
+        utilisateur.setId( utilisateurDTO.getId() );
+        utilisateur.setMot_de_passe( utilisateurDTO.getMot_de_passe() );
+        utilisateur.setNb_tentative( utilisateurDTO.getNb_tentative() );
         utilisateur.setNom( utilisateurDTO.getNom() );
         utilisateur.setPrenom( utilisateurDTO.getPrenom() );
-        utilisateur.setDate_naissance( utilisateurDTO.getDate_naissance() );
-        utilisateur.setMot_de_passe( utilisateurDTO.getMot_de_passe() );
-        utilisateur.setEtat( utilisateurDTO.getEtat() );
-        utilisateur.setNb_tentative( utilisateurDTO.getNb_tentative() );
         utilisateur.setSexe( sexeDTOToSexe( utilisateurDTO.getSexe() ) );
 
         return utilisateur;
@@ -44,14 +44,14 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         UtilisateurDTO utilisateurDTO = new UtilisateurDTO();
 
-        utilisateurDTO.setId( utilisateur.getId() );
+        utilisateurDTO.setDate_naissance( utilisateur.getDate_naissance() );
         utilisateurDTO.setEmail( utilisateur.getEmail() );
+        utilisateurDTO.setEtat( utilisateur.getEtat() );
+        utilisateurDTO.setId( utilisateur.getId() );
+        utilisateurDTO.setMot_de_passe( utilisateur.getMot_de_passe() );
+        utilisateurDTO.setNb_tentative( utilisateur.getNb_tentative() );
         utilisateurDTO.setNom( utilisateur.getNom() );
         utilisateurDTO.setPrenom( utilisateur.getPrenom() );
-        utilisateurDTO.setDate_naissance( utilisateur.getDate_naissance() );
-        utilisateurDTO.setMot_de_passe( utilisateur.getMot_de_passe() );
-        utilisateurDTO.setEtat( utilisateur.getEtat() );
-        utilisateurDTO.setNb_tentative( utilisateur.getNb_tentative() );
         utilisateurDTO.setSexe( sexeToSexeDTO( utilisateur.getSexe() ) );
 
         return utilisateurDTO;
