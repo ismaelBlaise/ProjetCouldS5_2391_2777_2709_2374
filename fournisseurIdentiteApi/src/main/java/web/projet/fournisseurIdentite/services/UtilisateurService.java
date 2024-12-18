@@ -6,6 +6,9 @@ import web.projet.fournisseurIdentite.models.Utilisateur;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,5 +36,21 @@ public class UtilisateurService {
         return utilisateurMapper.toUtilisateurDTO(savedUtilisateur);
     }
 
+
+    public String inscrireUtilisateur(UtilisateurDTO dto){
+        Utilisateur utilisateur= utilisateurMapper.toUtilisateur(dto);
+
+        utilisateur.setEtat(false);
+        utilisateurRepository.save(utilisateur);
+
+        String tokenStr=UUID.randomUUID.toString();
+        Token token= new Token();s
+        token.setToken(tokenStr);
+        token.setUtilisateur(utilisateur);
+        token.setDate_expiration(LocalDateTime.now().plusMinutes(5));
+        tokenRepository.save(token);
+
+        
+    }
 
 }
