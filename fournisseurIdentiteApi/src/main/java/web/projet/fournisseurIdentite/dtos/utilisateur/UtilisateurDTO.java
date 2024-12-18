@@ -13,7 +13,7 @@ public class UtilisateurDTO {
     private String prenom;
     private LocalDate date_naissance;
     private String mot_de_passe;
-    private Boolean etat;  
+    private Boolean etat = false;  
     private Integer nb_tentative;
     private SexeDTO sexe;
 }

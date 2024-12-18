@@ -4,14 +4,15 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import web.projet.fournisseurIdentite.dtos.sexe.SexeDTO;
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurCreateDTO;
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurUpdateDTO;
 import web.projet.fournisseurIdentite.models.Utilisateur;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring" , uses = SexeDTO.class)
 public interface UtilisateurMapper {
-
+    
     Utilisateur toUtilisateur(UtilisateurDTO utilisateurDTO);
 
     @Mapping(target = "id" , ignore = true)
@@ -35,4 +36,5 @@ public interface UtilisateurMapper {
     @Mapping(target = "sexe" , ignore = true)
     @Mapping(target = "nb_tentative" , ignore = true)
     void updateUtilisateurFromDTO(UtilisateurUpdateDTO utilisateurUpdateDTO, @MappingTarget Utilisateur utilisateur);
+
 }

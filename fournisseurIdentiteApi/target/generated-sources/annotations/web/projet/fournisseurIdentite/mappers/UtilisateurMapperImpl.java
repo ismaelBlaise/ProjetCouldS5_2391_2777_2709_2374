@@ -11,8 +11,8 @@ import web.projet.fournisseurIdentite.models.Utilisateur;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-18T19:48:19+0300",
-    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 21.0.5 (Ubuntu)"
+    date = "2024-12-18T23:57:58+0300",
+    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 3.41.0.z20241215-0944, environment: Java 17.0.13 (Eclipse Adoptium)"
 )
 @Component
 public class UtilisateurMapperImpl implements UtilisateurMapper {
@@ -25,14 +25,14 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         Utilisateur utilisateur = new Utilisateur();
 
-        utilisateur.setId( utilisateurDTO.getId() );
+        utilisateur.setDate_naissance( utilisateurDTO.getDate_naissance() );
         utilisateur.setEmail( utilisateurDTO.getEmail() );
+        utilisateur.setEtat( utilisateurDTO.getEtat() );
+        utilisateur.setId( utilisateurDTO.getId() );
+        utilisateur.setMot_de_passe( utilisateurDTO.getMot_de_passe() );
+        utilisateur.setNb_tentative( utilisateurDTO.getNb_tentative() );
         utilisateur.setNom( utilisateurDTO.getNom() );
         utilisateur.setPrenom( utilisateurDTO.getPrenom() );
-        utilisateur.setDate_naissance( utilisateurDTO.getDate_naissance() );
-        utilisateur.setMot_de_passe( utilisateurDTO.getMot_de_passe() );
-        utilisateur.setEtat( utilisateurDTO.getEtat() );
-        utilisateur.setNb_tentative( utilisateurDTO.getNb_tentative() );
         utilisateur.setSexe( sexeDTOToSexe( utilisateurDTO.getSexe() ) );
 
         return utilisateur;
@@ -46,11 +46,11 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         Utilisateur utilisateur = new Utilisateur();
 
+        utilisateur.setDate_naissance( utilisateurCreateDTO.getDate_naissance() );
         utilisateur.setEmail( utilisateurCreateDTO.getEmail() );
+        utilisateur.setMot_de_passe( utilisateurCreateDTO.getMot_de_passe() );
         utilisateur.setNom( utilisateurCreateDTO.getNom() );
         utilisateur.setPrenom( utilisateurCreateDTO.getPrenom() );
-        utilisateur.setDate_naissance( utilisateurCreateDTO.getDate_naissance() );
-        utilisateur.setMot_de_passe( utilisateurCreateDTO.getMot_de_passe() );
 
         return utilisateur;
     }
@@ -63,10 +63,10 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         Utilisateur utilisateur = new Utilisateur();
 
-        utilisateur.setNom( utilisateurCreateDTO.getNom() );
-        utilisateur.setPrenom( utilisateurCreateDTO.getPrenom() );
         utilisateur.setDate_naissance( utilisateurCreateDTO.getDate_naissance() );
         utilisateur.setMot_de_passe( utilisateurCreateDTO.getMot_de_passe() );
+        utilisateur.setNom( utilisateurCreateDTO.getNom() );
+        utilisateur.setPrenom( utilisateurCreateDTO.getPrenom() );
 
         return utilisateur;
     }
@@ -79,14 +79,14 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         UtilisateurDTO utilisateurDTO = new UtilisateurDTO();
 
-        utilisateurDTO.setId( utilisateur.getId() );
+        utilisateurDTO.setDate_naissance( utilisateur.getDate_naissance() );
         utilisateurDTO.setEmail( utilisateur.getEmail() );
+        utilisateurDTO.setEtat( utilisateur.getEtat() );
+        utilisateurDTO.setId( utilisateur.getId() );
+        utilisateurDTO.setMot_de_passe( utilisateur.getMot_de_passe() );
+        utilisateurDTO.setNb_tentative( utilisateur.getNb_tentative() );
         utilisateurDTO.setNom( utilisateur.getNom() );
         utilisateurDTO.setPrenom( utilisateur.getPrenom() );
-        utilisateurDTO.setDate_naissance( utilisateur.getDate_naissance() );
-        utilisateurDTO.setMot_de_passe( utilisateur.getMot_de_passe() );
-        utilisateurDTO.setEtat( utilisateur.getEtat() );
-        utilisateurDTO.setNb_tentative( utilisateur.getNb_tentative() );
         utilisateurDTO.setSexe( sexeToSexeDTO( utilisateur.getSexe() ) );
 
         return utilisateurDTO;
@@ -98,10 +98,10 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
             return;
         }
 
-        utilisateur.setNom( utilisateurUpdateDTO.getNom() );
-        utilisateur.setPrenom( utilisateurUpdateDTO.getPrenom() );
         utilisateur.setDate_naissance( utilisateurUpdateDTO.getDate_naissance() );
         utilisateur.setMot_de_passe( utilisateurUpdateDTO.getMot_de_passe() );
+        utilisateur.setNom( utilisateurUpdateDTO.getNom() );
+        utilisateur.setPrenom( utilisateurUpdateDTO.getPrenom() );
     }
 
     protected Sexe sexeDTOToSexe(SexeDTO sexeDTO) {
@@ -111,9 +111,7 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         Sexe sexe = new Sexe();
 
-        if ( sexeDTO.getId() != null ) {
-            sexe.setId( sexeDTO.getId().longValue() );
-        }
+        sexe.setId( sexeDTO.getId() );
         sexe.setSexe( sexeDTO.getSexe() );
 
         return sexe;
@@ -126,9 +124,7 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         SexeDTO sexeDTO = new SexeDTO();
 
-        if ( sexe.getId() != null ) {
-            sexeDTO.setId( sexe.getId().intValue() );
-        }
+        sexeDTO.setId( sexe.getId() );
         sexeDTO.setSexe( sexe.getSexe() );
 
         return sexeDTO;
