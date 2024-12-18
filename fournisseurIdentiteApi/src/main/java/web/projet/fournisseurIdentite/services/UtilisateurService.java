@@ -1,14 +1,18 @@
 package web.projet.fournisseurIdentite.services;
 
 import web.projet.fournisseurIdentite.dtos.utilisateur.UtilisateurDTO;
+import web.projet.fournisseurIdentite.mail.*;
+// import web.projet.fournisseurIdentite.mail.EmailService;
 import web.projet.fournisseurIdentite.mappers.UtilisateurMapper;
 import web.projet.fournisseurIdentite.models.Token;
 import web.projet.fournisseurIdentite.models.Utilisateur;
+import web.projet.fournisseurIdentite.repositories.TokenRepository;
 import web.projet.fournisseurIdentite.repositories.UtilisateurRepository;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +25,8 @@ public class UtilisateurService {
     private UtilisateurRepository utilisateurRepository;
     @Autowired
     private UtilisateurMapper utilisateurMapper;
-
+    @Autowired
+    private TokenRepository tokenRepository;
     
 
     public UtilisateurDTO save(UtilisateurDTO data) {
@@ -39,13 +44,23 @@ public class UtilisateurService {
 
 
     public String inscrireUtilisateur(UtilisateurDTO dto){
-        Utilisateur utilisateur= utilisateurMapper.toUtilisateur(dto);
+        Utilisateur utilisateur= utilisateurRepository.findByEmail(dto.getEmail()).get();
+        if(utilisateur!=null && utilisateur.getEtat()==false){
+            
+            
+            
+        }
+        else if(utilisateur!=null && utilisateur.getEtat()==true){
+            throw new RuntimeException("L'adresse email est deja utilise");
+        }
+
+        utilisateur= utilisateurMapper.toUtilisateur(dto);
 
         utilisateur.setEtat(false);
         utilisateurRepository.save(utilisateur);
 
-        String tokenStr=UUID.randomUUID.toString();
-        Token token= new Token();s
+        String tokenStr=UUID.randomUUID().toString();
+        Token token= new Token();
         token.setToken(tokenStr);
         token.setUtilisateur(utilisateur);
         token.setDate_expiration(LocalDateTime.now().plusMinutes(5));

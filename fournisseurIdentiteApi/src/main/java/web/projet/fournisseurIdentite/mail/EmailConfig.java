@@ -1,4 +1,4 @@
-package mail;
+package web.projet.fournisseurIdentite.mail;
 
 import java.util.Properties;
 

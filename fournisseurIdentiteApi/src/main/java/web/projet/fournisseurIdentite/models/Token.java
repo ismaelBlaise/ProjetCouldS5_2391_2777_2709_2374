@@ -17,7 +17,7 @@ public class Token {
 
     private String token;
 
-    private LocalDateTime date_expiraton;
+    private LocalDateTime date_expiration;
 
     @ManyToOne
     @JoinColumn(name = "id_utilisateurs")
