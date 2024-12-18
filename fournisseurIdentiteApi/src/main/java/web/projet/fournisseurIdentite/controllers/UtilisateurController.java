@@ -46,4 +46,14 @@ public class UtilisateurController {
             return  ResponseEntity.ok(e.getMessage());
         }
     }
+
+    @GetMapping("/reinitialiser-tentative")
+    public ResponseEntity<String> reinitialiserTentative(@RequestParam String token) {
+        try {
+            utilisateurService.reinitialiserTentative(token);
+            return ResponseEntity.ok("Compte validé avec succès !");
+        } catch (Exception e) {
+            return  ResponseEntity.ok(e.getMessage());
+        }
+    }
 }

@@ -53,6 +53,13 @@ public class UtilisateurService {
         return utilisateurMapper.toUtilisateurDTO(savedUtilisateur);
     }
 
+    public String demanderReinitialisation(UtilisateurDTO dto) throws Exception {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new RuntimeException("utilisateur untrouvable"));
+        Token newToken = tokenRepository.save(tokenService.creationToken(utilisateur));
+        String newUrl = creationUrlValidation(newToken);
+        emailReinitialisation(dto, newUrl);
+        return newUrl;
+    }
 
     public String inscrireUtilisateur(UtilisateurDTO dto) throws Exception {
         Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findByEmail(dto.getEmail());
@@ -98,13 +105,15 @@ public class UtilisateurService {
     }
     
 
-    
-
-    
-
     public String creationUrlValidation(Token token){
     
         String validationUrl = "http://localhost:8080/utilisateurs/valider-compte?token=" + token.getToken();
+        return validationUrl;
+    }
+
+    public String creationUrlReinitialisation(Token token){
+    
+        String validationUrl = "http://localhost:8080/utilisateurs/reinitialiser-tentative?token=" + token.getToken();
         return validationUrl;
     }
 
@@ -122,6 +131,20 @@ public class UtilisateurService {
         emailService.sendEmail(destinataires, sujet, contenuHTML);  
     }
 
+    public void emailReinitialisation(UtilisateurDTO dto,String validationUrl) throws Exception{
+        EmailConfig config = new EmailConfig("smtp.gmail.com", 587, "rarianamiadana@gmail.com", "mgxypljhfsktzlbk");
+        String destinataires = dto.getEmail();
+
+        String sujet = "Reinitialiser tentative Email";
+    
+        String contenuHTML = "Cliquer sur cette url pour reinitialiser vos tentative: "+validationUrl;
+        
+    
+        EmailService emailService = new EmailService(config);
+        emailService.sendEmail(destinataires, sujet, contenuHTML);  
+    }
+
+
     public void validerCompte(String tokenStr) {
 
         Token token = tokenRepository.findByToken(tokenStr)
@@ -137,4 +160,15 @@ public class UtilisateurService {
         utilisateurRepository.save(utilisateur);
         tokenRepository.delete(token);
     }
+
+    public void reinitialiserTentative(String tokenStr) {
+        Token token = tokenRepository.findByToken(tokenStr).orElseThrow(() -> new RuntimeException("Token invalide ou expiré"));
+        Utilisateur utilisateur = token.getUtilisateur();
+        Configuration configuration=configurationRepository.findByCle("nbtentative").get();
+        utilisateur.setNb_tentative(Integer.parseInt(configuration.getValeur()));
+        utilisateurRepository.save(utilisateur);
+        tokenRepository.delete(token);
+    }
+
+
 }
