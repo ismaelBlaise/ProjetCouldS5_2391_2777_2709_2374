@@ -53,40 +53,38 @@ public class UtilisateurService {
         return utilisateurMapper.toUtilisateurDTO(savedUtilisateur);
     }
 
-    public String  validationPin(ValidationPinDTO validationPinDTO) {
+    public String validationPin(ValidationPinDTO validationPinDTO) {
         String email = validationPinDTO.getEmail();
         int codePin = validationPinDTO.getCodepin();
-        
+    
         // Vérifier si l'utilisateur existe
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
     
         // Vérifier si le nombre de tentatives est épuisé
-        if (utilisateur.getNb_tentative() == 0 ) {
+        if (utilisateur.getNb_tentative() <= 0) {
             throw new RuntimeException("Trop de tentatives. Compte bloqué temporairement.");
         }
     
         // Vérifier si le Code PIN est valide
-        CodePin codePinEntity = codePinRepository.findByCodepin(codePin)
-                .orElse(null);
+        CodePin codePinEntity = codePinRepository.findByCodepin(codePin).orElse(null);
     
         if (codePinEntity != null && !codePinEntity.getDateExpiration().isBefore(LocalDateTime.now())) {
             resetNbTentative(utilisateur);
-            Token token=tokenservice.creationToken(utilisateur);
-            token=tokenservice.genererDateExpiration(token);
-            tokenRepository.save(token);
-            return token.getToken();
-        } 
-        // Si le Code PIN est incorrect ou expiré
-        incrementNbTentative(utilisateur);
-        System.out.println("Code PIN valide pour l'utilisateur : " + utilisateur.getEmail());
-        return null;
-        // throw new RuntimeException("Code PIN incorrect ou expiré.");
-    
 
+            // Création et configuration complète du token
+            Token token = tokenservice.creationToken(utilisateur);
+            token = tokenservice.genererDateExpiration(token);
+            tokenRepository.save(token);
         
-        
+            return token.getToken();
+        } else {
+            // Code PIN incorrect ou expiré
+            incrementNbTentative(utilisateur);
+            throw new RuntimeException("Code PIN incorrect ou expiré.");
+        }
     }
+    
     
 
 
