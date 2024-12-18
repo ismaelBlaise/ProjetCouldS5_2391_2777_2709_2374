@@ -6,14 +6,10 @@ import lombok.Data;
 import web.projet.fournisseurIdentite.dtos.sexe.SexeDTO;
 
 @Data
-public class UtilisateurDTO {
-    private Long id;
-    private String email;
+public class UtilisateurUpdateDTO {
     private String nom;
     private String prenom;
     private LocalDate date_naissance;
     private String mot_de_passe;
-    private Boolean etat;  
-    private Integer nb_tentative;
     private SexeDTO sexe;
 }
